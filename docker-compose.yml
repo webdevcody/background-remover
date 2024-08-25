@@ -1,0 +1,38 @@
+version: "3.9"
+services:
+  bg-db:
+    image: postgres
+    restart: always
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_PASSWORD: example
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+
+  s3-bucket:
+    build: .
+    restart: always
+    ports:
+      - 9000:9000
+    command: "node s3.js"
+    volumes:
+      - ".:/home/app"
+
+  bg-prisma-studio:
+    build: .
+    restart: always
+    environment:
+      DATABASE_URL: postgresql://postgres:example@bg-db:5433/postgres
+    ports:
+      - "5556:5555"
+    depends_on:
+      - bg-db
+    command: "npx prisma@4.14.1 studio"
+    volumes:
+      - .:/home/app
+      - /home/app/node_modules
+
+volumes:
+  postgres:

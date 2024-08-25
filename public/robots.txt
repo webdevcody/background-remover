@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /collection
+
+User-agent: *
+Allow: /
